@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -97,6 +98,29 @@ let timeLeft = 30;
 let currentMole = null;
 let gameRunning = false;
 
+/* 効果音 */
+function playHitSound() {
+    const audioCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.type = "square";
+    oscillator.frequency.value = 800;
+
+    gainNode.gain.setValueAtTime(
+        0.1,
+        audioCtx.currentTime
+    );
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.05);
+}
+
 for (let i = 0; i < 9; i++) {
     const hole = document.createElement("div");
     hole.className = "hole";
@@ -113,6 +137,9 @@ for (let i = 0; i < 9; i++) {
         if (currentMole === mole) {
             score++;
             scoreEl.textContent = score;
+
+            playHitSound();
+
             hideMole();
         }
     });
@@ -125,7 +152,8 @@ const moles = document.querySelectorAll(".mole");
 function showRandomMole() {
     hideMole();
 
-    const index = Math.floor(Math.random() * moles.length);
+    const index =
+        Math.floor(Math.random() * moles.length);
 
     currentMole = moles[index];
     currentMole.classList.add("show");
@@ -177,7 +205,10 @@ function endGame() {
         `ゲーム終了！ スコア: ${score}`;
 }
 
-startBtn.addEventListener("click", startGame);
+startBtn.addEventListener(
+    "click",
+    startGame
+);
 </script>
 
 </body>
